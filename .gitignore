@@ -5,7 +5,6 @@ build/
 pubspec.lock
 .flutter-plugins
 .flutter-plugins-dependencies
-example/
 
 # Node (SDK bundling)
 node_modules/
