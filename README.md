@@ -125,6 +125,9 @@ switch (result) {
 
   case CryptoNetworkResult(:final network, :final address, :final reference):
     // Crypto withdrawal address + optional tag/memo.
+  
+  case AuthorizeResult(:final transaction, :final triggerReason):
+    // 3DS card auth result — check transaction['status'].
 
   case UnknownResult(:final raw):
     // Future-proof fallback.
