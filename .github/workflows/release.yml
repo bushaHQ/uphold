@@ -79,11 +79,8 @@ jobs:
       - name: Commit version bump
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_author: igris <igris@users.noreply.github.com>
+          commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           commit_message: 'build(release): ${{ steps.semver.outputs.next }} [skip ci]'
-
-      - name: Validate pub publish
-        run: flutter pub publish --dry-run
 
       - name: Package release artifact
         run: |
