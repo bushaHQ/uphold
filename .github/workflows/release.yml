@@ -29,6 +29,7 @@ jobs:
           token: ${{ github.token }}
           branch: main
           patchList: fix, bugfix, perf, refactor, test, tests, chore
+          fallbackTag: v0.0.0
 
       - name: Update pubspec.yaml version
         run: |
