@@ -1,0 +1,12 @@
+include: package:flutter_lints/flutter.yaml
+
+formatter:
+  page_width: 120
+  trailing_commas: automate
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    avoid_print: false
+    prefer_expression_function_bodies: true
