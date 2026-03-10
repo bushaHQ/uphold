@@ -56,7 +56,9 @@ This runs `npm install` + `esbuild` and outputs `assets/payment_widget_sdk.js`.
 ```yaml
 dependencies:
   uphold_payment_widget:
-    path: ../uphold_payment_widget   # pending eventual publishing to pub.dev
+    git:
+      url: https://github.com/bushaHQ/uphold
+      ref: dev
 ```
 
 ### 3. Create sessions server-side
