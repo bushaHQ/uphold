@@ -59,19 +59,7 @@ dependencies:
     path: ../uphold_payment_widget   # pending eventual publishing to pub.dev
 ```
 
-### 3. Platform config
-
-**Android** (`android/app/src/main/AndroidManifest.xml`):
-
-```xml
-<!-- Sandbox only — remove for production -->
-<application android:usesCleartextTraffic="true">
-```
-
-**iOS**: Ensure minimum deployment target is iOS 14.0+. Add App Transport
-Security exceptions in `Info.plist` if needed for the sandbox domain.
-
-### 4. Create sessions server-side
+### 3. Create sessions server-side
 
 Your backend calls Uphold's Create Session endpoint with your enterprise
 credentials and returns the session JSON to the app. **Never ship Uphold API
