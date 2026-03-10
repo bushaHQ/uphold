@@ -41,7 +41,7 @@ A build script is included:
 
 ```bash
 # Requires Node.js ≥ 18
-cd path/to/uphold_payment_widget
+cd path/to/uphold
 ./tool/build_sdk.sh        # production (minified)
 ./tool/build_sdk.sh --dev  # development
 ```
@@ -57,10 +57,10 @@ Install from a specific release tag:
 
 ```yaml
 dependencies:
-  uphold_payment_widget:
+  uphold:
     git:
       url: https://github.com/bushaHQ/uphold
-      ref: v0.1.0  # replace with the desired release tag
+      ref: <version>  # replace with the latest release tag
 ```
 
 ### 3. Create sessions server-side
@@ -79,7 +79,7 @@ Docs: https://developer.uphold.com/rest-apis/widgets-api/payment/create-session
 ## Usage
 
 ```dart
-import 'package:uphold_payment_widget/uphold_payment_widget.dart';
+import 'package:uphold/uphold.dart';
 
 UpholdPaymentWidget(
   config: UpholdPaymentWidgetConfig(
@@ -128,7 +128,7 @@ switch (result) {
 ## Package structure
 
 ```
-uphold_payment_widget/
+uphold/
 ├── assets/
 │   ├── payment_widget.html          # HTML template (ships with package)
 │   └── payment_widget_sdk.js        # Bundled JS SDK (generated)
