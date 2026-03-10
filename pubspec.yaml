@@ -1,0 +1,28 @@
+name: uphold_payment_widget
+description: >
+  Flutter wrapper for the Uphold Payment Widget SDK. Embeds Uphold's
+  payment flow (deposits, withdrawals, card auth) via WebView with a
+  type-safe Dart event bridge.
+version: 0.0.1
+homepage: https://github.com/bushahq/uphold
+repository: https://github.com/bushahq/uphold
+issue_tracker: https://github.com/bushahq/uphold/issues
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.10.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  assets:
+    - assets/payment_widget.html
+    - assets/payment_widget_sdk.js
