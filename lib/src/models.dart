@@ -11,11 +11,14 @@ class PaymentWidgetSession {
 
   const PaymentWidgetSession({required this.url, required this.token, required this.flow});
 
-  factory PaymentWidgetSession.fromJson(Map<String, dynamic> json) => PaymentWidgetSession(
-    url: json['url'] as String,
-    token: json['token'] as String,
-    flow: PaymentWidgetFlow.fromString(json['flow'] as String),
-  );
+  factory PaymentWidgetSession.fromJson(Map<String, dynamic> json) => switch (json) {
+    {'url': String url, 'token': String token, 'flow': String flow} => PaymentWidgetSession(
+      url: url,
+      token: token,
+      flow: PaymentWidgetFlow.fromString(flow),
+    ),
+    _ => throw FormatException('Invalid PaymentWidgetSession JSON: $json'),
+  };
 
   Map<String, dynamic> toJson() => {'url': url, 'token': token, 'flow': flow.value};
 }
@@ -101,19 +104,16 @@ sealed class PaymentWidgetEvent {
   const PaymentWidgetEvent();
 
   /// Deserialises a raw JSON string from the JavaScript bridge.
-  factory PaymentWidgetEvent.fromMessage(String message) {
-    final json = jsonDecode(message) as Map<String, dynamic>;
-    final type = json['type'] as String;
-    final data = json['data'] as Map<String, dynamic>? ?? {};
-
-    return switch (type) {
-      'ready' => const PaymentWidgetReadyEvent(),
-      'complete' => PaymentWidgetCompleteEvent._fromJson(data),
-      'cancel' => const PaymentWidgetCancelEvent(),
-      'error' => PaymentWidgetErrorEvent._fromJson(data),
-      _ => throw ArgumentError('Unknown PaymentWidgetEvent type: $type'),
-    };
-  }
+  factory PaymentWidgetEvent.fromMessage(String message) => switch (jsonDecode(message)) {
+    {'type': 'ready'} => const PaymentWidgetReadyEvent(),
+    {'type': 'complete', 'data': Map<String, dynamic> data} => PaymentWidgetCompleteEvent._fromJson(data),
+    {'type': 'complete'} => PaymentWidgetCompleteEvent._fromJson({}),
+    {'type': 'cancel'} => const PaymentWidgetCancelEvent(),
+    {'type': 'error', 'data': Map<String, dynamic> data} => PaymentWidgetErrorEvent._fromJson(data),
+    {'type': 'error'} => PaymentWidgetErrorEvent._fromJson({}),
+    {'type': String type} => throw ArgumentError('Unknown PaymentWidgetEvent type: $type'),
+    _ => throw const FormatException('Invalid PaymentWidgetEvent message'),
+  };
 }
 
 class PaymentWidgetReadyEvent extends PaymentWidgetEvent {
