@@ -1,4 +1,4 @@
-# uphold_payment_widget
+# uphold
 
 Flutter package that wraps the [Uphold Payment Widget SDK](https://developer.uphold.com/widgets/payment/introduction) in a WebView with a type-safe Dart event bridge.
 
@@ -48,17 +48,19 @@ cd path/to/uphold_payment_widget
 
 This runs `npm install` + `esbuild` and outputs `assets/payment_widget_sdk.js`.
 
-> **Note**: We commit the generated `payment_widget_sdk.js` so that
-> consumers of the package don't need Node.js at all.
+> **Note**: `payment_widget_sdk.js` is **not** committed to the repo — it is
+> built automatically by the release CI and included in the release artifact.
 
 ### 2. Add the dependency
+
+Install from a specific release tag:
 
 ```yaml
 dependencies:
   uphold_payment_widget:
     git:
       url: https://github.com/bushaHQ/uphold
-      ref: dev
+      ref: v0.1.0  # replace with the desired release tag
 ```
 
 ### 3. Create sessions server-side
@@ -82,7 +84,6 @@ import 'package:uphold_payment_widget/uphold_payment_widget.dart';
 UpholdPaymentWidget(
   config: UpholdPaymentWidgetConfig(
     session: session,     // As gotten from your backend
-    sandbox: true,
     options: PaymentWidgetOptions(
       debug: true,
       paymentMethods: [

@@ -5,4 +5,4 @@
 library;
 
 export 'src/models.dart';
-export 'src/uphold_payment_widget.dart';
+export 'src/uphold.dart';

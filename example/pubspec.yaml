@@ -13,7 +13,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   http: ^1.6.0
-  uphold_payment_widget:
+  uphold:
     path: ../
 
 dev_dependencies:

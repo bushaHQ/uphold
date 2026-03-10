@@ -1,4 +1,4 @@
-name: uphold_payment_widget
+name: uphold
 description: >
   Flutter wrapper for the Uphold Payment Widget SDK. Embeds Uphold's
   payment flow (deposits, withdrawals, card auth) via WebView with a

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:uphold_payment_widget/uphold_payment_widget.dart';
+import 'package:uphold/uphold.dart';
 
 void main() => runApp(const ExampleApp());
 
