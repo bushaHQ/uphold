@@ -9,6 +9,7 @@ pubspec.lock
 # Node (SDK bundling)
 node_modules/
 package-lock.json
+assets/payment_widget_sdk.js
 
 # IDE
 .idea/
