@@ -13,6 +13,7 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     title: 'Uphold Payment Widget Demo',
     theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.green),
+    darkTheme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.green, brightness: Brightness.dark),
     home: const HomePage(),
   );
 }
@@ -46,6 +47,23 @@ class HomePage extends StatelessWidget {
   }
 }
 
+Future<PaymentWidgetSession> fetchSession(PaymentWidgetFlow flow) async {
+  final response = await http.post(
+    Uri.parse('URL_OF_YOUR_BACKEND_ENDPOINT'), // Replace with your backend endpoint that creates a session
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'flow': flow.value}),
+  );
+
+  if (response.statusCode case < 200 || >= 300) {
+    throw Exception('HTTP ${response.statusCode}');
+  }
+
+  return switch (jsonDecode(response.body)) {
+    {'session': Map<String, dynamic> data} => PaymentWidgetSession.fromJson(data),
+    _ => throw const FormatException('Missing "session" key in response'),
+  };
+}
+
 class PaymentPage extends StatefulWidget {
   final PaymentWidgetFlow flow;
 
@@ -59,29 +77,23 @@ class _PaymentPageState extends State<PaymentPage> {
   PaymentWidgetSession? _session;
   String? _error;
 
+  final _widgetController = UpholdPaymentWidgetController();
+
   @override
   void initState() {
     super.initState();
     _fetchSession();
   }
 
+  @override
+  void dispose() {
+    _widgetController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchSession() async {
     try {
-      final response = await http.post(
-        Uri.parse('https://your-backend.example.com/api/uphold/sessions'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'flow': widget.flow.value}),
-      );
-
-      if (response.statusCode case < 200 || >= 300) {
-        throw Exception('HTTP ${response.statusCode}');
-      }
-
-      final session = switch (jsonDecode(response.body)) {
-        {'session': Map<String, dynamic> data} => PaymentWidgetSession.fromJson(data),
-        _ => throw const FormatException('Missing "session" key in response'),
-      };
-
+      final session = await fetchSession(widget.flow);
       if (mounted) setState(() => _session = session);
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -91,21 +103,21 @@ class _PaymentPageState extends State<PaymentPage> {
   void _onComplete(PaymentWidgetResult result) {
     switch (result) {
       case ExternalAccountResult(:final selection):
-        print('Saved account selected: $selection');
+        debugPrint('Saved account selected: $selection');
 
       case DepositMethodResult(:final depositMethod, :final account):
         final type = depositMethod['type'];
-        print('Deposit via $type → account ${account['id']}');
+        debugPrint('Deposit via $type → account ${account['id']}');
 
       case CryptoNetworkResult(:final network, :final address, :final reference):
-        print('Withdraw to $network @ $address (ref: $reference)');
+        debugPrint('Withdraw to $network @ $address (ref: $reference)');
 
       case AuthorizeResult(:final transaction, :final triggerReason):
         final status = transaction['status'];
-        print('Authorize complete ($triggerReason): tx status = $status');
+        debugPrint('Authorize complete ($triggerReason): tx status = $status');
 
       case UnknownResult(:final raw):
-        print('Unknown: $raw');
+        debugPrint('Unknown: $raw');
     }
 
     if (mounted) {
@@ -119,17 +131,7 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   void _onError(PaymentWidgetError error) {
-    print('Widget error [${error.code}]: ${error.message}');
-
-    if (error.code == 'entity_not_found') {
-      // Session / quote expired → retry.
-      setState(() {
-        _session = null;
-        _error = null;
-      });
-      _fetchSession();
-      return;
-    }
+    debugPrint('Widget error [${error.code}]: ${error.message}');
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${error.message}')));
@@ -137,23 +139,9 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final title = switch (widget.flow) {
-      PaymentWidgetFlow.selectForDeposit => 'Deposit',
-      PaymentWidgetFlow.selectForWithdrawal => 'Withdraw',
-      PaymentWidgetFlow.authorize => 'Authorize',
-    };
+  Widget build(BuildContext context) => Scaffold(body: SafeArea(child: _buildBody(context)));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        leading: IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
-      ),
-      body: _buildBody(),
-    );
-  }
-
-  Widget _buildBody() => switch ((_session, _error)) {
+  Widget _buildBody(BuildContext context) => switch ((_session, _error)) {
     (_, String error) => Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -184,11 +172,45 @@ class _PaymentPageState extends State<PaymentPage> {
             CryptoPaymentMethod(assets: PaymentAssetFilter.include(['BTC', 'ETH', 'XRP'])),
           ],
         ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        loadingTimeout: const Duration(seconds: 20),
+        locale: 'en-US',
+        enableWebViewDebugging: true,
+
+        // Optional navigation filtering. Returning `true` allows all by default.
+        // Block a known problematic domain as an example:
+        // navigationPolicy: (url) => !url.contains('malicious.example.com'),
       ),
-      onReady: () => print('Widget ready'),
+      sessionProvider: () => fetchSession(widget.flow),
+      controller: _widgetController,
+      onReady: () => debugPrint('Widget ready'),
       onComplete: _onComplete,
       onCancel: _onCancel,
       onError: _onError,
+      onDispose: () => debugPrint('Widget disposed'),
+      loadingBuilder: (_) => const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [CircularProgressIndicator.adaptive(), SizedBox(height: 12), Text('Loading payment options...')],
+        ),
+      ),
+      errorBuilder: (context, error) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(error.message, textAlign: TextAlign.center),
+              const SizedBox(height: 8),
+              Text('Code: ${error.code}', style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 16),
+              FilledButton(onPressed: () => _widgetController.reload(), child: const Text('Retry')),
+            ],
+          ),
+        ),
+      ),
     ),
     _ => const Center(child: CircularProgressIndicator.adaptive()),
   };
