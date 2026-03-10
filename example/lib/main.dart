@@ -73,11 +73,14 @@ class _PaymentPageState extends State<PaymentPage> {
         body: jsonEncode({'flow': widget.flow.value}),
       );
 
-      if (response.statusCode != 200) {
+      if (response.statusCode case < 200 || >= 300) {
         throw Exception('HTTP ${response.statusCode}');
       }
 
-      final session = PaymentWidgetSession.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+      final session = switch (jsonDecode(response.body)) {
+        {'session': Map<String, dynamic> data} => PaymentWidgetSession.fromJson(data),
+        _ => throw const FormatException('Missing "session" key in response'),
+      };
 
       if (mounted) setState(() => _session = session);
     } catch (e) {
