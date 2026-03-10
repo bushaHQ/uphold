@@ -138,32 +138,27 @@ class PaymentWidgetCompleteEvent extends PaymentWidgetEvent {
 sealed class PaymentWidgetResult {
   const PaymentWidgetResult();
 
-  factory PaymentWidgetResult.fromJson(Map<String, dynamic> json) {
+  factory PaymentWidgetResult.fromJson(Map<String, dynamic> json) => switch (json) {
     // The `authorize` flow returns { transaction, trigger } with no `via` key.
-    if (json.containsKey('transaction') && json.containsKey('trigger')) {
-      final trigger = json['trigger'] as Map<String, dynamic>;
-      return AuthorizeResult(
-        transaction: json['transaction'] as Map<String, dynamic>,
-        triggerReason: trigger['reason'] as String,
-      );
-    }
-
-    final via = json['via'] as String;
-
-    return switch (via) {
-      'external-account' => ExternalAccountResult(selection: json['selection'] as Map<String, dynamic>),
-      'deposit-method' => DepositMethodResult(
-        depositMethod: (json['selection'] as Map<String, dynamic>)['depositMethod'] as Map<String, dynamic>,
-        account: (json['selection'] as Map<String, dynamic>)['account'] as Map<String, dynamic>,
-      ),
-      'crypto-network' => CryptoNetworkResult(
-        network: (json['selection'] as Map<String, dynamic>)['network'] as String,
-        address: (json['selection'] as Map<String, dynamic>)['address'] as String,
-        reference: (json['selection'] as Map<String, dynamic>)['reference'] as String?,
-      ),
-      _ => UnknownResult(raw: json),
-    };
-  }
+    {'transaction': Map<String, dynamic> transaction, 'trigger': {'reason': String reason}} => AuthorizeResult(
+      transaction: transaction,
+      triggerReason: reason,
+    ),
+    {'via': 'external-account', 'selection': Map<String, dynamic> selection} => ExternalAccountResult(
+      selection: selection,
+    ),
+    {
+      'via': 'deposit-method',
+      'selection': {'depositMethod': Map<String, dynamic> depositMethod, 'account': Map<String, dynamic> account},
+    } =>
+      DepositMethodResult(depositMethod: depositMethod, account: account),
+    {
+      'via': 'crypto-network',
+      'selection': {'network': String network, 'address': String address, 'reference': String? reference},
+    } =>
+      CryptoNetworkResult(network: network, address: address, reference: reference),
+    _ => UnknownResult(raw: json),
+  };
 }
 
 /// User selected a saved card or bank account.
@@ -242,11 +237,26 @@ class PaymentWidgetError implements Exception {
   });
 
   factory PaymentWidgetError.fromJson(Map<String, dynamic> json) => PaymentWidgetError(
-    name: json['name'] as String? ?? 'UnknownError',
-    code: json['code'] as String? ?? 'unknown',
-    message: json['message'] as String? ?? 'An unknown error occurred',
-    details: json['details'] as Map<String, dynamic>?,
-    httpStatusCode: json['httpStatusCode'] as int?,
+    name: switch (json['name']) {
+      String name => name,
+      _ => 'UnknownError',
+    },
+    code: switch (json['code']) {
+      String code => code,
+      _ => 'unknown',
+    },
+    message: switch (json['message']) {
+      String msg => msg,
+      _ => 'An unknown error occurred',
+    },
+    details: switch (json['details']) {
+      Map<String, dynamic> d => d,
+      _ => null,
+    },
+    httpStatusCode: switch (json['httpStatusCode']) {
+      int code => code,
+      _ => null,
+    },
   );
 
   @override
