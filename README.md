@@ -1,5 +1,8 @@
 # uphold
 
+[![Test & Coverage](https://github.com/bushaHQ/uphold/actions/workflows/test.yml/badge.svg?branch=dev)](https://github.com/bushaHQ/uphold/actions/workflows/test.yml)
+![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/bushaHQ/uphold/dev/coverage-badge.json)
+
 Flutter package that wraps the [Uphold Payment Widget SDK](https://developer.uphold.com/widgets/payment/introduction) in a WebView with a type-safe Dart event bridge.
 
 ## Architecture

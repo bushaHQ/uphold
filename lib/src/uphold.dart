@@ -180,8 +180,8 @@ class _UpholdPaymentWidgetState extends State<UpholdPaymentWidget> {
   Timer? _timeoutTimer;
   late PaymentWidgetSession _activeSession;
 
-  static const _htmlAsset = 'packages/uphold_payment_widget/assets/payment_widget.html';
-  static const _sdkAsset = 'packages/uphold_payment_widget/assets/payment_widget_sdk.js';
+  static const _htmlAsset = 'packages/uphold/assets/payment_widget.html';
+  static const _sdkAsset = 'packages/uphold/assets/payment_widget_sdk.js';
 
   @override
   void initState() {
