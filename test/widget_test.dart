@@ -639,6 +639,69 @@ void main() {
       expect(html, contains('<script>'));
       expect(html, contains('/* sdk */'));
       expect(html, isNot(contains('<!--INJECT_SDK-->')));
+      expect(html, isNot(contains('<!--INJECT_THEME-->')));
+    });
+
+    testWidgets('injects theme with rgba for transparent background', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdPaymentWidget(config: _config(backgroundColor: Colors.transparent)),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final html = verify(() => _mockController.loadHtmlString(captureAny())).captured.first as String;
+
+      expect(html, contains('color-scheme'));
+      expect(html, contains('background: rgba(0, 0, 0, 0.0)'));
+      expect(html, isNot(contains('<!--INJECT_THEME-->')));
+    });
+
+    testWidgets('injects dark color scheme for dark background', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdPaymentWidget(config: _config(backgroundColor: Colors.black)),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final html = verify(() => _mockController.loadHtmlString(captureAny())).captured.first as String;
+
+      expect(html, contains('color-scheme'));
+      expect(html, contains('dark'));
+      expect(html, contains('rgba(0, 0, 0, 1.0)'));
+    });
+
+    testWidgets('injects light color scheme for white background', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdPaymentWidget(config: _config(backgroundColor: Colors.white)),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final html = verify(() => _mockController.loadHtmlString(captureAny())).captured.first as String;
+
+      expect(html, contains('light'));
+      expect(html, contains('rgba(255, 255, 255, 1.0)'));
     });
   });
 
@@ -774,7 +837,7 @@ void _setupWebViewMocks() {
 }
 
 void _installFakeAssetBundle() {
-  const fakeHtml = '<html><!--INJECT_SDK--></html>';
+  const fakeHtml = '<html><!--INJECT_THEME--><!--INJECT_SDK--></html>';
   const fakeSdk = '/* sdk */';
 
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler('flutter/assets', (
@@ -804,12 +867,14 @@ UpholdPaymentWidgetConfig _config({
   PaymentWidgetOptions? options,
   String? locale,
   NavigationPolicy? navigationPolicy,
+  Color? backgroundColor,
 }) => UpholdPaymentWidgetConfig(
   session: session ?? _session(),
   loadingTimeout: loadingTimeout,
   options: options,
   locale: locale,
   navigationPolicy: navigationPolicy,
+  backgroundColor: backgroundColor ?? Colors.transparent,
 );
 
 void _simulatePageFinished() => _capturedPageFinishedCallback?.call('about:blank');

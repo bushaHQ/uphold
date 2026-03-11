@@ -4,6 +4,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!--
+    DO NOT REMOVE the marker below.
+    At runtime, the Dart widget replaces it with a <meta name="color-scheme">
+    tag and the background color from your app's theme.
+    See: lib/src/uphold_payment_widget.dart → _loadAssets()
+  -->
+  <!--INJECT_THEME-->
+
   <title>Uphold Payment Widget</title>
   <style>
     * {
@@ -23,10 +32,6 @@
     #payment-container {
       width: 100%;
       height: 100vh;
-    }
-
-    #payment-container iframe {
-      background: transparent;
     }
   </style>
 </head>
