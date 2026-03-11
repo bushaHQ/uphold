@@ -242,7 +242,17 @@ class _UpholdPaymentWidgetState extends State<UpholdPaymentWidget> {
     try {
       final results = await Future.wait([rootBundle.loadString(_htmlAsset), rootBundle.loadString(_sdkAsset)]);
 
-      final assembledHtml = results[0].replaceFirst('<!--INJECT_SDK-->', '<script>\n${results[1]}\n</script>');
+      final bgColor = widget.config.backgroundColor;
+      final colorScheme = _isDark(bgColor) ? 'dark' : 'light';
+      final cssColor = _colorToCss(bgColor);
+
+      final assembledHtml = results[0]
+          .replaceFirst(
+            '<!--INJECT_THEME-->',
+            '<meta name="color-scheme" content="$colorScheme">\n'
+                '<style>html, body { background: $cssColor; }</style>',
+          )
+          .replaceFirst('<!--INJECT_SDK-->', '<script>\n${results[1]}\n</script>');
 
       await _controller.loadHtmlString(assembledHtml);
       _startTimeoutTimer();
@@ -366,6 +376,17 @@ class _UpholdPaymentWidgetState extends State<UpholdPaymentWidget> {
       );
     }
   }
+
+  /// Converts a Flutter [Color] to a CSS rgba() string.
+  static String _colorToCss(Color color) {
+    final r = (color.r * 255).round();
+    final g = (color.g * 255).round();
+    final b = (color.b * 255).round();
+    final a = color.a;
+    return 'rgba($r, $g, $b, $a)';
+  }
+
+  static bool _isDark(Color color) => color.computeLuminance() < 0.5;
 
   static String _escapeJs(String value) =>
       value.replaceAll('\\', '\\\\').replaceAll("'", "\\'").replaceAll('\n', '\\n').replaceAll('\r', '\\r');
