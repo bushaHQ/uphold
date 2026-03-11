@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.2.0] - 2026-03-11
+### :sparkles: New Features
+- [`3ffff2a`](https://github.com/bushaHQ/uphold/commit/3ffff2a535e82a444f3a911dc9f0f5e59afe2bde) - Add comprehensive test suite with 100% line coverage *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+### :wrench: Chores
+- [`f618e52`](https://github.com/bushaHQ/uphold/commit/f618e52421321321a6ec347a0bfda5fd2817b2e2) - update docs *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+
 ## [v0.1.0] - 2026-03-10
 ### :sparkles: New Features
 - [`e185843`](https://github.com/bushaHQ/uphold/commit/e185843e177c38ca427d8d4b7d50acc024e08654) - rich customizations *(commit by [@Mastersam07](https://github.com/Mastersam07))*
@@ -20,3 +28,4 @@ All notable changes to this project will be documented in this file.
 - [`d9ac377`](https://github.com/bushaHQ/uphold/commit/d9ac377e86c7eb0d4098288809270af6c55b71fc) - remove dry run step *(commit by [@Mastersam07](https://github.com/Mastersam07))*
 
 [v0.1.0]: https://github.com/bushaHQ/uphold/compare/v0.0.1...v0.1.0
+[v0.2.0]: https://github.com/bushaHQ/uphold/compare/v0.1.0...v0.2.0
