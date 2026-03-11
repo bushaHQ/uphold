@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.2.1] - 2026-03-11
+### :bug: Bug Fixes
+- [`79372d6`](https://github.com/bushaHQ/uphold/commit/79372d66727fb2b6890f6019d8bf2c5f4a81899e) - include bundled SDK in release commit for git dependencies *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+
 ## [v0.2.0] - 2026-03-11
 ### :sparkles: New Features
 - [`3ffff2a`](https://github.com/bushaHQ/uphold/commit/3ffff2a535e82a444f3a911dc9f0f5e59afe2bde) - Add comprehensive test suite with 100% line coverage *(commit by [@Mastersam07](https://github.com/Mastersam07))*
@@ -29,3 +34,4 @@ All notable changes to this project will be documented in this file.
 
 [v0.1.0]: https://github.com/bushaHQ/uphold/compare/v0.0.1...v0.1.0
 [v0.2.0]: https://github.com/bushaHQ/uphold/compare/v0.1.0...v0.2.0
+[v0.2.1]: https://github.com/bushaHQ/uphold/compare/v0.2.0...v0.2.1
