@@ -67,7 +67,10 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Commit version bump
+      - name: Stage SDK for commit (gitignored, needs force-add)
+        run: git add -f assets/payment_widget_sdk.js
+
+      - name: Commit version bump + SDK
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
