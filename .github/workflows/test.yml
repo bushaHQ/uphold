@@ -29,6 +29,18 @@ jobs:
           flutter-version: 3.38.5
           cache: true
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build SDK
+        run: npm run build
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -40,6 +52,12 @@ jobs:
 
       - name: Run tests with coverage
         run: flutter test --coverage
+
+      - name: Enforce minimum coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v3
+        with:
+          path: coverage/lcov.info
+          min_coverage: 95
 
       - name: Extract coverage percentage
         id: coverage
