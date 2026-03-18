@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
-# Bundles the Uphold Payment Widget JS SDK into the package's assets folder.
+# Bundles all Uphold Widget JS SDKs into the package's assets folder.
 #
 # Usage:
 #   ./tool/build_sdk.sh          # minified production build
@@ -20,17 +20,19 @@ if ! command -v node &>/dev/null; then
   exit 1
 fi
 
-# Install npm deps (including the Uphold SDK + esbuild).
+# Install npm deps (including the Uphold SDKs + esbuild).
 echo "Installing dependencies..."
 npm install --silent
 
 # Run the appropriate build.
 if [[ "${1:-}" == "--dev" ]]; then
-  echo "Building SDK bundle (dev)..."
+  echo "Building SDK bundles (dev)..."
   npm run build:dev
 else
-  echo "Building SDK bundle (production)..."
+  echo "Building SDK bundles (production)..."
   npm run build
 fi
 
-echo "Done → assets/payment_widget_sdk.js"
+echo "Done:"
+echo "  → assets/payment_widget_sdk.js"
+echo "  → assets/travel_rule_widget_sdk.js"
