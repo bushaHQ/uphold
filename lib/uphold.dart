@@ -1,8 +1,10 @@
-/// Flutter package for the Uphold Payment Widget.
+/// Flutter package for Uphold Widgets (Payment + Travel Rule).
 ///
-/// Wraps the Uphold `@uphold/enterprise-payment-widget-web-sdk` in a WebView
-/// and bridges events back to Dart through a JavaScriptChannel.
+/// Wraps Uphold's enterprise widget SDKs in WebViews and bridges
+/// events back to Dart through JavaScriptChannels.
 library;
 
 export 'src/models.dart';
+export 'src/travel_rule_models.dart';
+export 'src/travel_rule_widget.dart';
 export 'src/uphold.dart';
