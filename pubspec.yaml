@@ -1,8 +1,7 @@
 name: uphold
 description: >
-  Flutter wrapper for the Uphold Payment Widget SDK. Embeds Uphold's
-  payment flow (deposits, withdrawals, card auth) via WebView with a
-  type-safe Dart event bridge.
+  Flutter wrapper for Uphold Widget SDKs. Embeds Uphold's Payment and
+  Travel Rule widgets via WebView with type-safe Dart event bridges.
 version: 0.2.2
 homepage: https://github.com/bushahq/uphold
 repository: https://github.com/bushahq/uphold
@@ -30,3 +29,5 @@ flutter:
   assets:
     - assets/payment_widget.html
     - assets/payment_widget_sdk.js
+    - assets/travel_rule_widget.html
+    - assets/travel_rule_widget_sdk.js

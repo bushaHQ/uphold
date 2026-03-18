@@ -49,13 +49,15 @@ jobs:
       - name: Build SDK (production)
         run: npm run build
 
-      - name: Verify SDK was generated
+      - name: Verify SDKs were generated
         run: |
-          if [ ! -f assets/payment_widget_sdk.js ]; then
-            echo "::error::assets/payment_widget_sdk.js was not generated"
-            exit 1
-          fi
-          echo "SDK size: $(wc -c < assets/payment_widget_sdk.js) bytes"
+          for sdk in assets/payment_widget_sdk.js assets/travel_rule_widget_sdk.js; do
+            if [ ! -f "$sdk" ]; then
+              echo "::error::$sdk was not generated"
+              exit 1
+            fi
+            echo "$sdk: $(wc -c < "$sdk") bytes"
+          done
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -67,8 +69,8 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Stage SDK for commit (gitignored, needs force-add)
-        run: git add -f assets/payment_widget_sdk.js
+      - name: Stage SDKs for commit (gitignored, needs force-add)
+        run: git add -f assets/payment_widget_sdk.js assets/travel_rule_widget_sdk.js
 
       - name: Commit version bump + SDK
         uses: stefanzweifel/git-auto-commit-action@v7
