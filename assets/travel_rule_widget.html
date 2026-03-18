@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!--
+    DO NOT REMOVE the marker below.
+    At runtime, the Dart widget replaces it with a <meta name="color-scheme">
+    tag and the background color from your app's theme.
+    See: lib/src/travel_rule_widget.dart → _loadAssets()
+  -->
+  <!--INJECT_THEME-->
+
+  <title>Uphold Travel Rule Widget</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #travel-rule-container {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="travel-rule-container"></div>
+
+  <!-- 
+      DO NOT REMOVE the marker below. 
+      At runtime, the Dart widget replaces it with the bundled JS SDK 
+      (assets/travel_rule_widget_sdk.js) so the WebView is fully self-contained.
+      See: lib/src/travel_rule_widget.dart → _loadAssets()
+    -->
+  <!--INJECT_SDK-->
+
+  <script>
+    // Bridge: posts structured JSON events to Flutter's JavaScriptChannel.
+    function sendToFlutter(type, data) {
+      if (window.TravelRuleWidgetBridge) {
+        window.TravelRuleWidgetBridge.postMessage(JSON.stringify({ type: type, data: data || {} }));
+      }
+    }
+
+    // Called from Dart via `WebViewController.runJavaScript`.
+    function initWidget(sessionJson, optionsJson) {
+      try {
+        var session = JSON.parse(sessionJson);
+        var options = optionsJson ? JSON.parse(optionsJson) : {};
+        var widget = new TravelRuleWidget(session, options);
+
+        widget.on('ready', function () {
+          sendToFlutter('ready');
+        });
+
+        widget.on('complete', function (event) {
+          sendToFlutter('complete', event.detail.value);
+          widget.unmount();
+        });
+
+        widget.on('cancel', function () {
+          sendToFlutter('cancel');
+          widget.unmount();
+        });
+
+        widget.on('error', function (event) {
+          sendToFlutter('error', event.detail.error);
+          widget.unmount();
+        });
+
+        widget.mountIframe(document.getElementById('travel-rule-container'));
+      } catch (err) {
+        sendToFlutter('error', {
+          name: 'InitializationError',
+          code: 'init_failed',
+          message: err.message || 'Failed to initialize the Travel Rule Widget',
+        });
+      }
+    }
+  </script>
+</body>
+
+</html>
