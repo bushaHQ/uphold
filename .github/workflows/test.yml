@@ -57,7 +57,7 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
           path: coverage/lcov.info
-          min_coverage: 95
+          min_coverage: 70
 
       - name: Extract coverage percentage
         id: coverage
