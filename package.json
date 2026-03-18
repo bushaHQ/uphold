@@ -1,13 +1,18 @@
 {
   "private": true,
-  "name": "uphold_payment_widget_sdk_bundler",
-  "description": "Bundles the Uphold Payment Widget SDK into a single JS file for the Flutter package.",
+  "name": "uphold_widget_sdk_bundler",
+  "description": "Bundles Uphold Widget SDKs into single JS files for the Flutter package.",
   "scripts": {
-    "build": "esbuild tool/sdk_entry.js --bundle --format=iife --global-name=UpholdSDK --outfile=assets/payment_widget_sdk.js --minify",
-    "build:dev": "esbuild tool/sdk_entry.js --bundle --format=iife --global-name=UpholdSDK --outfile=assets/payment_widget_sdk.js"
+    "build": "npm run build:payment && npm run build:travel-rule",
+    "build:dev": "npm run build:payment:dev && npm run build:travel-rule:dev",
+    "build:payment": "esbuild tool/sdk_entry.js --bundle --format=iife --global-name=UpholdSDK --outfile=assets/payment_widget_sdk.js --minify",
+    "build:payment:dev": "esbuild tool/sdk_entry.js --bundle --format=iife --global-name=UpholdSDK --outfile=assets/payment_widget_sdk.js",
+    "build:travel-rule": "esbuild tool/travel_rule_sdk_entry.js --bundle --format=iife --global-name=UpholdTravelRuleSDK --outfile=assets/travel_rule_widget_sdk.js --minify",
+    "build:travel-rule:dev": "esbuild tool/travel_rule_sdk_entry.js --bundle --format=iife --global-name=UpholdTravelRuleSDK --outfile=assets/travel_rule_widget_sdk.js"
   },
   "devDependencies": {
     "@uphold/enterprise-payment-widget-web-sdk": "latest",
+    "@uphold/enterprise-travel-rule-widget-web-sdk": "latest",
     "esbuild": "^0.24.0"
   }
 }
