@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.3.0] - 2026-03-18
+### :sparkles: New Features
+- [`abe8a7d`](https://github.com/bushaHQ/uphold/commit/abe8a7dfea774739e57fb71f9b8571e381d82630) - expose travel widget *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+- [`5562e13`](https://github.com/bushaHQ/uphold/commit/5562e137fdcd5cd652a2c2a2a8bc7feabf66e3ce) - update docs *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+### :wrench: Chores
+- [`44b3c4b`](https://github.com/bushaHQ/uphold/commit/44b3c4bfb589d813813287b89945f0a7c1584911) - add npm configuration for travel rule widget *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+- [`da51a62`](https://github.com/bushaHQ/uphold/commit/da51a6254dd8b3cf34b2a2b9840245fe2f9320f1) - add base for travel widget js injection *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+- [`4e2fd02`](https://github.com/bushaHQ/uphold/commit/4e2fd0261af14cdf59f59504b611abea43a85efd) - update sdk build tool *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+- [`dd104c2`](https://github.com/bushaHQ/uphold/commit/dd104c228d3660157c3f87d58f72c28cc208d400) - add tests *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+- [`28b94f1`](https://github.com/bushaHQ/uphold/commit/28b94f15704f4e79240e53818e4fb6bb62fb1a6b) - reduce min coverage percent to 70 *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+- [`5899879`](https://github.com/bushaHQ/uphold/commit/58998797c33142482d40f9b05fc7c5d1fdb907ce) - stash unstanged working dir changes *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+
 ## [v0.2.2] - 2026-03-11
 ### :wrench: Chores
 - [`b83b48c`](https://github.com/bushaHQ/uphold/commit/b83b48c3dc036edc00f30fbdd8ba92e0e7cda6d6) - improved light and dark mode *(commit by [@Mastersam07](https://github.com/Mastersam07))*
@@ -41,3 +55,4 @@ All notable changes to this project will be documented in this file.
 [v0.2.0]: https://github.com/bushaHQ/uphold/compare/v0.1.0...v0.2.0
 [v0.2.1]: https://github.com/bushaHQ/uphold/compare/v0.2.0...v0.2.1
 [v0.2.2]: https://github.com/bushaHQ/uphold/compare/v0.2.1...v0.2.2
+[v0.3.0]: https://github.com/bushaHQ/uphold/compare/v0.2.2...v0.3.0
