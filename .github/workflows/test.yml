@@ -88,6 +88,8 @@ jobs:
           git add coverage-badge.json
           if ! git diff --cached --quiet; then
             git commit -m "ci: update coverage badge [skip ci]"
+            git stash --include-untracked
             git pull --rebase
+            git stash pop || true
             git push
           fi
