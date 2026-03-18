@@ -22,4 +22,24 @@ void main() {
       controller.dispose();
     });
   });
+
+  group('UpholdTravelRuleWidgetController', () {
+    test('isAttached is false initially', () {
+      final controller = UpholdTravelRuleWidgetController();
+      expect(controller.isAttached, isFalse);
+      controller.dispose();
+    });
+
+    test('dispose sets isAttached to false', () {
+      final controller = UpholdTravelRuleWidgetController();
+      controller.dispose();
+      expect(controller.isAttached, isFalse);
+    });
+
+    test('reload does not throw when not attached', () async {
+      final controller = UpholdTravelRuleWidgetController();
+      await controller.reload();
+      controller.dispose();
+    });
+  });
 }
