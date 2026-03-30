@@ -72,6 +72,9 @@ jobs:
       - name: Stage SDKs for commit (gitignored, needs force-add)
         run: git add -f assets/payment_widget_sdk.js assets/travel_rule_widget_sdk.js
 
+      - name: Pull latest changes
+        run: git pull --rebase origin dev
+
       - name: Commit version bump + SDK
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
