@@ -8,19 +8,24 @@ class PaymentWidgetSession {
   final String url;
   final String token;
   final PaymentWidgetFlow flow;
+  final Map<String, dynamic>? data;
 
-  const PaymentWidgetSession({required this.url, required this.token, required this.flow});
+  const PaymentWidgetSession({required this.url, required this.token, required this.flow, this.data});
 
   factory PaymentWidgetSession.fromJson(Map<String, dynamic> json) => switch (json) {
     {'url': String url, 'token': String token, 'flow': String flow} => PaymentWidgetSession(
       url: url,
       token: token,
       flow: PaymentWidgetFlow.fromString(flow),
+      data: switch (json['data']) {
+        Map<String, dynamic> data => data,
+        _ => null,
+      },
     ),
     _ => throw FormatException('Invalid PaymentWidgetSession JSON: $json'),
   };
 
-  Map<String, dynamic> toJson() => {'url': url, 'token': token, 'flow': flow.value};
+  Map<String, dynamic> toJson() => {'url': url, 'token': token, 'flow': flow.value, 'data': ?data};
 }
 
 /// Flows
