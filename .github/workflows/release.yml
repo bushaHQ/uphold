@@ -73,7 +73,10 @@ jobs:
         run: git add -f assets/payment_widget_sdk.js assets/travel_rule_widget_sdk.js
 
       - name: Pull latest changes
-        run: git pull --rebase origin dev
+        run: |
+          git stash --include-untracked
+          git pull --rebase origin dev
+          git stash pop
 
       - name: Commit version bump + SDK
         uses: stefanzweifel/git-auto-commit-action@v7
