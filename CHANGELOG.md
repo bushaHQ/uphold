@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.4.0] - 2026-03-30
+### :sparkles: New Features
+- [`f8e9e7c`](https://github.com/bushaHQ/uphold/commit/f8e9e7c89eaf9196605adb1312dc6b9a20641b06) - add optional data field to PaymentWidgetSession *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+### :bug: Bug Fixes
+- [`d6af4ab`](https://github.com/bushaHQ/uphold/commit/d6af4ab8693cdb4c25a7fa9e849b4075b8540a7d) - fix latest changes on release ci *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+### :wrench: Chores
+- [`b3ac1e4`](https://github.com/bushaHQ/uphold/commit/b3ac1e4a1d7af0a4e4894b3b45fcad19bd30ecec) - fix ci *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+
 ## [v0.3.0] - 2026-03-18
 ### :sparkles: New Features
 - [`abe8a7d`](https://github.com/bushaHQ/uphold/commit/abe8a7dfea774739e57fb71f9b8571e381d82630) - expose travel widget *(commit by [@Mastersam07](https://github.com/Mastersam07))*
@@ -56,3 +67,4 @@ All notable changes to this project will be documented in this file.
 [v0.2.1]: https://github.com/bushaHQ/uphold/compare/v0.2.0...v0.2.1
 [v0.2.2]: https://github.com/bushaHQ/uphold/compare/v0.2.1...v0.2.2
 [v0.3.0]: https://github.com/bushaHQ/uphold/compare/v0.2.2...v0.3.0
+[v0.4.0]: https://github.com/bushaHQ/uphold/compare/v0.3.0...v0.4.0
