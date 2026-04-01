@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.4.1] - 2026-04-01
+### :bug: Bug Fixes
+- [`d179a59`](https://github.com/bushaHQ/uphold/commit/d179a5908836a50a725c829e84d681b33e41b1a9) - load widget HTML from temp file instead of loadHtmlString *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+- [`fb16728`](https://github.com/bushaHQ/uphold/commit/fb16728aca25085bdb8b5a9255cae9c21530db7d) - fix failing tests *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+
 ## [v0.4.0] - 2026-03-30
 ### :sparkles: New Features
 - [`f8e9e7c`](https://github.com/bushaHQ/uphold/commit/f8e9e7c89eaf9196605adb1312dc6b9a20641b06) - add optional data field to PaymentWidgetSession *(commit by [@Mastersam07](https://github.com/Mastersam07))*
@@ -68,3 +74,4 @@ All notable changes to this project will be documented in this file.
 [v0.2.2]: https://github.com/bushaHQ/uphold/compare/v0.2.1...v0.2.2
 [v0.3.0]: https://github.com/bushaHQ/uphold/compare/v0.2.2...v0.3.0
 [v0.4.0]: https://github.com/bushaHQ/uphold/compare/v0.3.0...v0.4.0
+[v0.4.1]: https://github.com/bushaHQ/uphold/compare/v0.4.0...v0.4.1
