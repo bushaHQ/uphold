@@ -24,8 +24,13 @@ void main() {
   setUp(() {
     rootBundle.evict('packages/uphold/assets/travel_rule_widget.html');
     rootBundle.evict('packages/uphold/assets/travel_rule_widget_sdk.js');
+    UpholdTravelRuleWidget.htmlLoaderOverride = (controller, html) => controller.loadHtmlString(html);
     _installFakeAssetBundle();
     _setupWebViewMocks();
+  });
+
+  tearDown(() {
+    UpholdTravelRuleWidget.htmlLoaderOverride = null;
   });
 
   group('UpholdTravelRuleWidget', () {
@@ -320,6 +325,296 @@ void main() {
 
       expect(receivedError, isNull);
     });
+
+    testWidgets('injects session with locale when configured', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(config: _config(locale: 'pt-BR')),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      _simulatePageFinished();
+      await tester.pump();
+
+      final captured = verify(() => _mockController.runJavaScript(captureAny())).captured.last as String;
+      expect(captured, contains('initWidget'));
+      expect(captured, contains('pt-BR'));
+    });
+
+    testWidgets('injects session with options when configured', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(config: _config(options: const TravelRuleWidgetOptions(debug: true))),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      _simulatePageFinished();
+      await tester.pump();
+
+      final captured = verify(() => _mockController.runJavaScript(captureAny())).captured.last as String;
+      expect(captured, contains('initWidget'));
+      expect(captured, contains('"debug":true'));
+    });
+
+    testWidgets('entity_not_found error triggers session refresh', (tester) async {
+      var refreshCalled = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(
+                config: _config(),
+                sessionProvider: () async {
+                  refreshCalled = true;
+                  return _session();
+                },
+                onError: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      _simulatePageFinished();
+
+      _sendBridgeMessage(
+        '{"type":"error","data":{"name":"NotFound","code":"entity_not_found","message":"Session expired"}}',
+      );
+      await tester.pump();
+
+      expect(refreshCalled, isTrue);
+    });
+
+    testWidgets('entity_not_found without sessionProvider emits error normally', (tester) async {
+      TravelRuleWidgetError? receivedError;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(config: _config(), onError: (e) => receivedError = e),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      _simulatePageFinished();
+
+      _sendBridgeMessage(
+        '{"type":"error","data":{"name":"NotFound","code":"entity_not_found","message":"Session expired"}}',
+      );
+      await tester.pump();
+
+      final error = receivedError;
+      if (error == null) fail('Expected onError to be called');
+      expect(error.code, 'entity_not_found');
+    });
+
+    testWidgets('session refresh failure emits error', (tester) async {
+      TravelRuleWidgetError? receivedError;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(
+                config: _config(),
+                sessionProvider: () async => throw Exception('Network down'),
+                onError: (e) => receivedError = e,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      _simulatePageFinished();
+
+      _sendBridgeMessage('{"type":"error","data":{"name":"NotFound","code":"entity_not_found","message":"expired"}}');
+      await tester.pump();
+
+      final error = receivedError;
+      if (error == null) fail('Expected onError to be called');
+      expect(error.code, 'session_refresh_failed');
+    });
+
+    testWidgets('malformed bridge message does not throw', (tester) async {
+      TravelRuleWidgetError? receivedError;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(config: _config(), onError: (e) => receivedError = e),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      _simulatePageFinished();
+
+      _sendBridgeMessage('not valid json');
+      await tester.pump();
+
+      expect(receivedError, isNull);
+    });
+
+    testWidgets('page finished only injects session once', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(width: 400, height: 600, child: UpholdTravelRuleWidget(config: _config())),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      _simulatePageFinished();
+      await tester.pump();
+
+      _simulatePageFinished();
+      await tester.pump();
+
+      verify(() => _mockController.runJavaScript(any())).called(1);
+    });
+
+    testWidgets('navigationPolicy allows navigation when returning true', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(config: _config(navigationPolicy: (url) => url.startsWith('https'))),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final callback = _capturedNavigationRequestCallback;
+      if (callback == null) fail('NavigationRequestCallback was not captured');
+
+      final allowed = await callback(const NavigationRequest(url: 'https://example.com', isMainFrame: true));
+      expect(allowed, NavigationDecision.navigate);
+
+      final blocked = await callback(const NavigationRequest(url: 'http://evil.com', isMainFrame: true));
+      expect(blocked, NavigationDecision.prevent);
+    });
+
+    testWidgets('navigation allowed by default without policy', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(width: 400, height: 600, child: UpholdTravelRuleWidget(config: _config())),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final callback = _capturedNavigationRequestCallback;
+      if (callback == null) fail('NavigationRequestCallback was not captured');
+
+      final result = await callback(const NavigationRequest(url: 'http://anything.com', isMainFrame: true));
+      expect(result, NavigationDecision.navigate);
+    });
+
+    testWidgets('asset load failure emits AssetLoadError', (tester) async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
+        'flutter/assets',
+        (ByteData? message) async => null,
+      );
+      rootBundle.evict('packages/uphold/assets/travel_rule_widget.html');
+      rootBundle.evict('packages/uphold/assets/travel_rule_widget_sdk.js');
+
+      TravelRuleWidgetError? receivedError;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(config: _config(), onError: (e) => receivedError = e),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final error = receivedError;
+      if (error == null) fail('Expected onError to be called');
+      expect(error.code, 'asset_load_failed');
+      expect(error.name, 'AssetLoadError');
+    });
+
+    testWidgets('enableWebViewDebugging on iOS prints debug message', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(
+                config: UpholdTravelRuleWidgetConfig(session: _session(), enableWebViewDebugging: true),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(SizedBox), findsWidgets);
+
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('enableWebViewDebugging on unsupported platform prints fallback', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              height: 600,
+              child: UpholdTravelRuleWidget(
+                config: UpholdTravelRuleWidgetConfig(session: _session(), enableWebViewDebugging: true),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(SizedBox), findsWidgets);
+
+      debugDefaultTargetPlatformOverride = null;
+    });
   });
 
   group('Theme injection', () {
@@ -468,6 +763,7 @@ class _FakeBuildContext extends Fake implements BuildContext {}
 
 JavaScriptChannelParams? _capturedChannelParams;
 PageEventCallback? _capturedPageFinishedCallback;
+NavigationRequestCallback? _capturedNavigationRequestCallback;
 
 late _MockWebViewPlatform _mockPlatform;
 late _MockPlatformWebViewController _mockController;
@@ -477,6 +773,7 @@ late _MockPlatformNavigationDelegate _mockNavDelegate;
 void _setupWebViewMocks() {
   _capturedChannelParams = null;
   _capturedPageFinishedCallback = null;
+  _capturedNavigationRequestCallback = null;
 
   _mockPlatform = _MockWebViewPlatform();
   _mockController = _MockPlatformWebViewController();
@@ -496,7 +793,10 @@ void _setupWebViewMocks() {
     (invocation) async => _capturedChannelParams = invocation.positionalArguments[0] as JavaScriptChannelParams,
   );
 
-  when(() => _mockNavDelegate.setOnNavigationRequest(any())).thenAnswer((_) async {});
+  when(() => _mockNavDelegate.setOnNavigationRequest(any())).thenAnswer(
+    (invocation) async =>
+        _capturedNavigationRequestCallback = invocation.positionalArguments[0] as NavigationRequestCallback,
+  );
   when(() => _mockNavDelegate.setOnPageStarted(any())).thenAnswer((_) async {});
   when(() => _mockNavDelegate.setOnPageFinished(any())).thenAnswer(
     (invocation) async => _capturedPageFinishedCallback = invocation.positionalArguments[0] as PageEventCallback,

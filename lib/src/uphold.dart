@@ -118,6 +118,13 @@ class UpholdPaymentWidgetConfig {
 /// )
 /// ```
 class UpholdPaymentWidget extends StatefulWidget {
+  /// Override for how assembled HTML is loaded into the WebView.
+  ///
+  /// Defaults to writing a temp file and using [WebViewController.loadFile]
+  /// to work around a WKWebView bug with [WebViewController.loadHtmlString].
+  @visibleForTesting
+  static Future<void> Function(WebViewController controller, String html)? htmlLoaderOverride;
+
   final UpholdPaymentWidgetConfig config;
 
   /// Called when the widget has loaded and is interactive.
@@ -257,11 +264,16 @@ class _UpholdPaymentWidgetState extends State<UpholdPaymentWidget> {
           )
           .replaceFirst('<!--INJECT_SDK-->', '<script>\n${results[1]}\n</script>');
 
-      _tempDir?.delete(recursive: true).ignore();
-      final dir = _tempDir = await Directory.systemTemp.createTemp('uphold_payment_');
-      final tempFile = File('${dir.path}/payment_widget.html');
-      await tempFile.writeAsString(assembledHtml);
-      await _controller.loadFile(tempFile.path);
+      switch (UpholdPaymentWidget.htmlLoaderOverride) {
+        case final loader?:
+          await loader(_controller, assembledHtml);
+        case _:
+          _tempDir?.delete(recursive: true).ignore();
+          final dir = _tempDir = await Directory.systemTemp.createTemp('uphold_payment_');
+          final tempFile = File('${dir.path}/payment_widget.html');
+          await tempFile.writeAsString(assembledHtml);
+          await _controller.loadFile(tempFile.path);
+      }
       _startTimeoutTimer();
     } catch (e) {
       _emitError(

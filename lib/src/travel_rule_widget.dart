@@ -100,6 +100,13 @@ class UpholdTravelRuleWidgetConfig {
 /// )
 /// ```
 class UpholdTravelRuleWidget extends StatefulWidget {
+  /// Override for how assembled HTML is loaded into the WebView.
+  ///
+  /// Defaults to writing a temp file and using [WebViewController.loadFile]
+  /// to work around a WKWebView bug with [WebViewController.loadHtmlString].
+  @visibleForTesting
+  static Future<void> Function(WebViewController controller, String html)? htmlLoaderOverride;
+
   final UpholdTravelRuleWidgetConfig config;
 
   /// Called when the widget has loaded and is interactive.
@@ -240,11 +247,16 @@ class _UpholdTravelRuleWidgetState extends State<UpholdTravelRuleWidget> {
           )
           .replaceFirst('<!--INJECT_SDK-->', '<script>\n${results[1]}\n</script>');
 
-      _tempDir?.delete(recursive: true).ignore();
-      final dir = _tempDir = await Directory.systemTemp.createTemp('uphold_travel_rule_');
-      final tempFile = File('${dir.path}/travel_rule_widget.html');
-      await tempFile.writeAsString(assembledHtml);
-      await _controller.loadFile(tempFile.path);
+      switch (UpholdTravelRuleWidget.htmlLoaderOverride) {
+        case final loader?:
+          await loader(_controller, assembledHtml);
+        case _:
+          _tempDir?.delete(recursive: true).ignore();
+          final dir = _tempDir = await Directory.systemTemp.createTemp('uphold_travel_rule_');
+          final tempFile = File('${dir.path}/travel_rule_widget.html');
+          await tempFile.writeAsString(assembledHtml);
+          await _controller.loadFile(tempFile.path);
+      }
       _startTimeoutTimer();
     } catch (e) {
       _emitError(

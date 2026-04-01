@@ -24,8 +24,13 @@ void main() {
   setUp(() {
     rootBundle.evict('packages/uphold/assets/payment_widget.html');
     rootBundle.evict('packages/uphold/assets/payment_widget_sdk.js');
+    UpholdPaymentWidget.htmlLoaderOverride = (controller, html) => controller.loadHtmlString(html);
     _installFakeAssetBundle();
     _setupWebViewMocks();
+  });
+
+  tearDown(() {
+    UpholdPaymentWidget.htmlLoaderOverride = null;
   });
 
   group('UpholdPaymentWidget', () {
