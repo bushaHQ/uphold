@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -179,6 +180,7 @@ class _UpholdPaymentWidgetState extends State<UpholdPaymentWidget> {
   bool _initialized = false;
   Timer? _timeoutTimer;
   late PaymentWidgetSession _activeSession;
+  Directory? _tempDir;
 
   static const _htmlAsset = 'packages/uphold/assets/payment_widget.html';
   static const _sdkAsset = 'packages/uphold/assets/payment_widget_sdk.js';
@@ -196,6 +198,7 @@ class _UpholdPaymentWidgetState extends State<UpholdPaymentWidget> {
   @override
   void dispose() {
     _timeoutTimer?.cancel();
+    _tempDir?.delete(recursive: true).ignore();
     widget.controller?._detach();
     widget.onDispose?.call();
     super.dispose();
@@ -254,7 +257,11 @@ class _UpholdPaymentWidgetState extends State<UpholdPaymentWidget> {
           )
           .replaceFirst('<!--INJECT_SDK-->', '<script>\n${results[1]}\n</script>');
 
-      await _controller.loadHtmlString(assembledHtml);
+      _tempDir?.delete(recursive: true).ignore();
+      final dir = _tempDir = await Directory.systemTemp.createTemp('uphold_payment_');
+      final tempFile = File('${dir.path}/payment_widget.html');
+      await tempFile.writeAsString(assembledHtml);
+      await _controller.loadFile(tempFile.path);
       _startTimeoutTimer();
     } catch (e) {
       _emitError(

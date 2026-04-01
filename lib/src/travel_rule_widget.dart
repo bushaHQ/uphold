@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -162,6 +163,7 @@ class _UpholdTravelRuleWidgetState extends State<UpholdTravelRuleWidget> {
   bool _initialized = false;
   Timer? _timeoutTimer;
   late TravelRuleWidgetSession _activeSession;
+  Directory? _tempDir;
 
   static const _htmlAsset = 'packages/uphold/assets/travel_rule_widget.html';
   static const _sdkAsset = 'packages/uphold/assets/travel_rule_widget_sdk.js';
@@ -179,6 +181,7 @@ class _UpholdTravelRuleWidgetState extends State<UpholdTravelRuleWidget> {
   @override
   void dispose() {
     _timeoutTimer?.cancel();
+    _tempDir?.delete(recursive: true).ignore();
     widget.controller?._detach();
     widget.onDispose?.call();
     super.dispose();
@@ -237,7 +240,11 @@ class _UpholdTravelRuleWidgetState extends State<UpholdTravelRuleWidget> {
           )
           .replaceFirst('<!--INJECT_SDK-->', '<script>\n${results[1]}\n</script>');
 
-      await _controller.loadHtmlString(assembledHtml);
+      _tempDir?.delete(recursive: true).ignore();
+      final dir = _tempDir = await Directory.systemTemp.createTemp('uphold_travel_rule_');
+      final tempFile = File('${dir.path}/travel_rule_widget.html');
+      await tempFile.writeAsString(assembledHtml);
+      await _controller.loadFile(tempFile.path);
       _startTimeoutTimer();
     } catch (e) {
       _emitError(
