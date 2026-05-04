@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.4.2] - 2026-05-04
+### :wrench: Chores
+- [`404897f`](https://github.com/bushaHQ/uphold/commit/404897f73dc2243e13c5da558ddc1f6029782d67) - configure dependabot for weekly dependency updates *(commit by [@Mastersam07](https://github.com/Mastersam07))*
+
+
 ## [v0.4.1] - 2026-04-01
 ### :bug: Bug Fixes
 - [`d179a59`](https://github.com/bushaHQ/uphold/commit/d179a5908836a50a725c829e84d681b33e41b1a9) - load widget HTML from temp file instead of loadHtmlString *(commit by [@Mastersam07](https://github.com/Mastersam07))*
@@ -75,3 +80,4 @@ All notable changes to this project will be documented in this file.
 [v0.3.0]: https://github.com/bushaHQ/uphold/compare/v0.2.2...v0.3.0
 [v0.4.0]: https://github.com/bushaHQ/uphold/compare/v0.3.0...v0.4.0
 [v0.4.1]: https://github.com/bushaHQ/uphold/compare/v0.4.0...v0.4.1
+[v0.4.2]: https://github.com/bushaHQ/uphold/compare/v0.4.1...v0.4.2
