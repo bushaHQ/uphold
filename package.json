@@ -13,6 +13,6 @@
   "devDependencies": {
     "@uphold/enterprise-payment-widget-web-sdk": "latest",
     "@uphold/enterprise-travel-rule-widget-web-sdk": "latest",
-    "esbuild": "^0.28.0"
+    "esbuild": "^0.28.1"
   }
 }
